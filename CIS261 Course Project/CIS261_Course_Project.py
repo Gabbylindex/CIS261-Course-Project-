@@ -1,6 +1,13 @@
-#Gabe Ranola
-#CIS261
-#Course Project Week 3 1/6/26
+# Gabe Ranola
+# CIS261
+# Course Project Week 3 1/6/26
+
+
+def get_date_range():
+    from_date = input("Enter FROM date (mm/dd/yyyy): ")
+    to_date = input("Enter TO date (mm/dd/yyyy): ")
+    return from_date, to_date
+
 
 
 def get_employee_name():
@@ -15,35 +22,62 @@ def get_hourly_rate():
 def get_tax_rate():
     return float(input("Enter income tax rate (as a decimal): "))
 
-def calculate_pay(hours, rate, tax_rate):
-    gross = hours * rate
-    tax = gross * tax_rate
-    net = gross - tax
-    return gross, tax, net
 
-def display_employee_info(name, hours, rate, tax_rate, gross, tax, net):
-    print(f"\nEmployee Name: {name}")
-    print(f"Total Hours: {hours}")
-    print(f"Hourly Rate: ${rate:.2f}")
-    print(f"Gross Pay: ${gross:.2f}")
-    print(f"Income Tax Rate: {tax_rate:.2%}")
-    print(f"Income Tax: ${tax:.2f}")
-    print(f"Net Pay: ${net:.2f}\n")
 
-def display_totals(count, total_hours, total_gross, total_tax, total_net):
-    print("\n--- Payroll Summary ---")
-    print(f"Total Employees: {count}")
-    print(f"Total Hours Worked: {total_hours}")
-    print(f"Total Gross Pay: ${total_gross:.2f}")
-    print(f"Total Income Tax: ${total_tax:.2f}")
-    print(f"Total Net Pay: ${total_net:.2f}")
+def process_employees(employee_list):
+    totals = {
+        "total_employees": 0,
+        "total_hours": 0,
+        "total_tax": 0,
+        "total_net_pay": 0
+    }
+
+    print("\n================ EMPLOYEE PAY REPORT ================\n")
+
+    for emp in employee_list:
+        from_date, to_date, name, hours, rate, tax_rate = emp
+
+        gross = hours * rate
+        tax = gross * tax_rate
+        net = gross - tax
+
+        print(f"From Date: {from_date}")
+        print(f"To Date:   {to_date}")
+        print(f"Employee:  {name}")
+        print(f"Hours:     {hours}")
+        print(f"Rate:      ${rate:.2f}")
+        print(f"Gross Pay: ${gross:.2f}")
+        print(f"Tax Rate:  {tax_rate:.2%}")
+        print(f"Tax:       ${tax:.2f}")
+        print(f"Net Pay:   ${net:.2f}")
+        print("----------------------------------------------------\n")
+
+        totals["total_employees"] += 1
+        totals["total_hours"] += hours
+        totals["total_tax"] += tax
+        totals["total_net_pay"] += net
+
+    return totals
+
+
+
+def display_totals(totals):
+    print("\n==================== TOTALS ====================")
+    print(f"Total Employees: {totals['total_employees']}")
+    print(f"Total Hours:     {totals['total_hours']}")
+    print(f"Total Taxes:     ${totals['total_tax']:.2f}")
+    print(f"Total Net Pay:   ${totals['total_net_pay']:.2f}")
+    print("================================================\n")
+
+
 
 def main():
-    employee_count = 0
-    total_hours = total_gross = total_tax = total_net = 0
+    employee_list = []
 
     while True:
+        from_date, to_date = get_date_range()
         name = get_employee_name()
+
         if name.lower() == "end":
             break
 
@@ -51,15 +85,14 @@ def main():
         rate = get_hourly_rate()
         tax_rate = get_tax_rate()
 
-        gross, tax, net = calculate_pay(hours, rate, tax_rate)
-        display_employee_info(name, hours, rate, tax_rate, gross, tax, net)
+        employee_list.append([from_date, to_date, name, hours, rate, tax_rate])
 
-        employee_count += 1
-        total_hours += hours
-        total_gross += gross
-        total_tax += tax
-        total_net += net
+        again = input("Add another employee? (y/n): ").lower()
+        if again != "y":
+            break
 
-    display_totals(employee_count, total_hours, total_gross, total_tax, total_net)
+    totals = process_employees(employee_list)
+    display_totals(totals)
+
 
 main()
